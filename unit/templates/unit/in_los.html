@@ -1,0 +1,77 @@
+{% extends 'unit/base.html' %}
+{% load static %}
+{% block title %} IN LOS {% endblock %}
+{% block inlosactive %}active{% endblock %}
+{% block main %}
+<div class="row d-flex justify-content-around rounded p-2 text-center m-2">
+  <h2>{{request.user}} IN LOS</h2>
+  <div>
+    <h1>{{month}}</h1>
+    <form action="" method="GET">
+      {% csrf_token %}
+    <input type="month" name="month">
+    <input type="submit" value="Filter" name="filter">
+    </form>
+  </div>
+</div>
+<section class="p-2 m-2 rounded shadow">
+  <table class="table table-hover ">
+    <thead>
+      <tr>
+        <th scope="col">Ser</th>
+        <th scope="col">Ref</th>
+        <th scope="col">Sender</th>
+        <!-- <th scope="col">Receiver</th> -->
+        <th scope="col">Time</th>
+        <!-- <th scope="col">File</th> -->
+        <th scope="col">Dispatched</th>
+        <th scope="col">Received</th>
+      </tr>
+    </thead>
+    <tbody>
+        {% for message in messages %}
+      <tr>
+        <th scope="row">{{forloop.revcounter}}</th>
+        <td>{{message.ref}}</td>
+        <td>{{message.sender}}</td>
+        <!-- <td>{{message.main_receiver}}</td> -->
+        <td>{{message.datetime_of_action}}</td>
+        <!-- <td><a href="{{message.file.url}}" target="_blank" class="btn btn-success btn-sm">File</a></td> -->
+        <td>
+          {% if message.dispatched == True %}
+           <h3>&#10004;</h3>
+          {% else %}
+          <form action="" method="POST">
+            {% csrf_token %}
+            <input type="text" name="id" value="{{message.id}}" hidden>
+            <input type="submit" value="Done" name="dispa">
+          </form>
+          {% endif %}
+        </td>
+
+        <td>
+          {% if request.user.username in message.received_by_fun %}
+            <h3>&#10004;</h3>
+          {% else %}
+            <form action="" method="POST">
+              {% csrf_token %}
+              <span>
+                <input type="time" name="time_of_rec" id="" >
+                <input type="date" name="date_of_rec" id="" >
+                <input type="text" name="ref" id="" value="{{message.ref}}" hidden>
+                <!-- <h5>{{message.received_by_fun}}</h5>
+                <h5>{{request.user.username}}</h5> -->
+              </span>
+              <span>
+                <input type="submit" name="received_ack" value="&#10004;" >
+              </span>
+            </form>
+          {% endif %}
+        </td>
+      </tr>
+        {% endfor %}
+    </tbody>
+</table>
+</section>
+
+{% endblock %}
