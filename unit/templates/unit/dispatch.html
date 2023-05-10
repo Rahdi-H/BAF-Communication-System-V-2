@@ -1,0 +1,27 @@
+{% extends 'unit/base.html' %}
+{% block title %} Dispatching {% endblock %}
+{% block main %}
+<section class="container d-flex justify-content-center">
+    <div class="container w-50 shadow-lg p-5 mt-5 mb-5">
+        {% if messages %}
+            {% for message in messages %}
+            <div class="alert alert-{{message.tags}} alert-dismissible fade show" role="alert">
+                <strong>{{message}}</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            {% endfor %}
+        {% endif %}
+        <h2 class="text-center">{{request.user}}</h2>
+        <h2 class="text-center">Dispatch To</h2>
+        <form action="" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="d-flex justify-content-center pt-3">
+                <textarea name="offices" id="offices" cols="30" rows="10">{{dis.rec_office}}</textarea>
+            </div>
+            <div class="d-flex justify-content-center pt-3">
+                <input type="submit" value="Save" class='btn btn-success'>
+            </div>
+        </form>
+    </div>
+</section>
+{% endblock %}

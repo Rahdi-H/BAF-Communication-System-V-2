@@ -12,10 +12,21 @@ class Acknowledgement(models.Model):
     def __str__(self):
         return str(self.user)
 
+class DispAck(models.Model):
+    rec_office = models.TextField()
+    ref = models.CharField(max_length=255)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return str(self.rec_office)
+    
+    def ok(self):
+        return str(self.rec_office)
+
 class LOS(models.Model):
     serial = models.IntegerField()
     ref = models.CharField(max_length=255)
-    originator = models.CharField(max_length=100)
+#   originator = models.CharField(max_length=100)
     sender = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True , related_name='senderr')
     receiver_unit = models.ManyToManyField(User, related_name='receivers', verbose_name='receiver_unit')
 #   main_receiver = models.CharField(max_length=255, blank=True, null=True)
@@ -26,7 +37,7 @@ class LOS(models.Model):
     action_taken_by = models.CharField(max_length=10)
     received_by = models.ManyToManyField(Acknowledgement, related_name='received', verbose_name='User who received', blank=True)
     receiver_receiving_time = models.TimeField(blank=True , null=True)
-    dispatched = models.BooleanField(default=False)
+    dispatched_to = models.ManyToManyField(DispAck, blank=True, related_name='despatched', verbose_name='Offices who received')
 
 
     def __str__(self):
@@ -37,11 +48,14 @@ class LOS(models.Model):
     
     def received_by_fun(self):
         return ','.join([str(p) for p in self.received_by.all()])
+    
+    def dispatched_to_fun(self):
+        return ','.join([str(p) for p in self.dispatched_to.all()])
 
 class CRPT(models.Model):
     serial = models.IntegerField()
     ref = models.CharField(max_length=255)
-    originator = models.CharField(max_length=100)
+    # originator = models.CharField(max_length=100)
     sender = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True , related_name='senderrr')
     receiver_unit = models.ManyToManyField(User, related_name='receiverss', verbose_name='receiver_unit')
 #   main_receiver = models.CharField(max_length=255, blank=True, null=True)
@@ -54,7 +68,7 @@ class CRPT(models.Model):
     receiver_receiving_time = models.TimeField(blank=True , null=True)
     group = models.IntegerField()
     security_grade = models.CharField(max_length=50)
-    dispatched = models.BooleanField(default=False)
+    dispatched_to = models.ManyToManyField(DispAck, blank=True, related_name='cdespatched', verbose_name='Offices who received')
 
 
     def __str__(self):
@@ -65,3 +79,6 @@ class CRPT(models.Model):
     
     def received_by_fun(self):
         return ','.join([str(p) for p in self.received_by.all()])
+    
+    def dispatched_to_fun(self):
+        return ','.join([str(p) for p in self.dispatched_to.all()])

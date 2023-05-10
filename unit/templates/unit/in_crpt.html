@@ -41,18 +41,18 @@
         <td>{{message.datetime_of_action}}</td>
         <td>{{message.group}}</td>
         <td>{{message.security_grade}}</td>
-        <td>
-          {% if message.dispatched == True %}
-           <h3>&#10004;</h3>
+        <td>{{message.dispatched_to_fun}}
+          {% if disp %}
+            {% for d in disp %}
+              {% if d.ref == message.ref %}
+                {{d.rec_office}}
+              {% endif %}
+            {% endfor %}
+                <a href="{% url 'dispatch' message.ref %}"><h4 class="btn btn-success btn-sm">Dispatch</h4></a>
           {% else %}
-          <form action="" method="POST">
-            {% csrf_token %}
-            <input type="text" name="id" value="{{message.id}}" hidden>
-            <input type="submit" value="Done" name="dispa">
-          </form>
+            <a href="{% url 'dispatch' message.ref %}"><h4 class="btn btn-success btn-sm">Dispatchi</h4></a>
           {% endif %}
         </td>
-
         <td>
           {% if request.user.username in message.received_by_fun %}
             <h3>&#10004;</h3>

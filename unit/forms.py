@@ -1,9 +1,23 @@
 from django import forms
-from .models import LOS, CRPT
+from .models import LOS, CRPT, DispAck
 
 class LoginForm(forms.Form):
     username = forms.CharField(widget=forms.TextInput(attrs={'class':'form-control'}))
     password = forms.CharField(widget=forms.PasswordInput(attrs={"class": 'form-control'}))
+
+class DispAckForm(forms.ModelForm):
+    class Meta:
+        model = DispAck
+        fields = [
+            'rec_office',
+            'ref',
+            'user',
+        ]
+        widgets = {
+            'rec_office' : forms.TextInput(attrs={"class":'form-control form-control-sm', "placeholder":'Recipient offices', 'name': 'offices'}),
+            'ref' : forms.TextInput(attrs={'class':'form-control form-control-sm', "placeholder":'Reference No', 'name':'ref'}),
+           
+        }
 
 class LOSForm(forms.ModelForm):
     class Meta:
@@ -11,7 +25,7 @@ class LOSForm(forms.ModelForm):
         fields = [ 
             'serial',
             'ref',
-            'originator',
+            # 'originator',
             'sender',
             'receiver_unit',
             # 'main_receiver',
@@ -23,7 +37,7 @@ class LOSForm(forms.ModelForm):
         widgets = {
             'serial': forms.NumberInput(attrs={"class":'form-control form-control-sm', "placeholder":'Serial', 'name': 'serial'}),
             'ref' : forms.TextInput(attrs={'class':'form-control form-control-sm', "placeholder":'Reference No', 'name':'ref'}),
-            'originator' : forms.TextInput(attrs={'class':'form-control form-control-sm', "placeholder":'Originator', 'name':'originator'}),
+            # 'originator' : forms.TextInput(attrs={'class':'form-control form-control-sm', "placeholder":'Originator', 'name':'originator'}),
             'receiver_unit' : forms.SelectMultiple(attrs={'class': 'form-control form-control-sm', 'name':'receiver_unit'}),
             # 'main_receiver' : forms.TextInput(attrs={'class': 'form-control form-control-sm', 'placeholder':'Receiving Sections', 'name':'main_receiver'}),
         #   'file' : forms.FileInput(attrs={'class':'form-control form-control-sm', 'name':'file'}),
@@ -38,7 +52,7 @@ class CRPTForm(forms.ModelForm):
         fields = [ 
             'serial',
             'ref',
-            'originator',
+            # 'originator',
             'sender',
             'receiver_unit',
             # 'main_receiver',
@@ -52,7 +66,7 @@ class CRPTForm(forms.ModelForm):
         widgets = {
             'serial': forms.NumberInput(attrs={"class":'form-control form-control-sm', "placeholder":'Serial', 'name': 'serial'}),
             'ref' : forms.TextInput(attrs={'class':'form-control form-control-sm', "placeholder":'Reference No', 'name':'ref'}),
-            'originator' : forms.TextInput(attrs={'class':'form-control form-control-sm', "placeholder":'Originator', 'name':'originator'}),
+            # 'originator' : forms.TextInput(attrs={'class':'form-control form-control-sm', "placeholder":'Originator', 'name':'originator'}),
             'receiver_unit' : forms.SelectMultiple(attrs={'class': 'form-control form-control-sm', 'name':'receiver_unit'}),
             # 'main_receiver' : forms.TextInput(attrs={'class': 'form-control form-control-sm', 'placeholder':'Receiving Sections', 'name':'main_receiver'}),
         #   'file' : forms.FileInput(attrs={'class':'form-control form-control-sm', 'name':'file'}),

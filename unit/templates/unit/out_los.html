@@ -20,7 +20,7 @@
               <tr>
                 <th scope="col">Ser</th>
                 <th scope="col">Ref</th>
-                <th scope="col">Originator</th>
+                <!-- <th scope="col">Originator</th> -->
                 <th scope="col">Sender</th>
                 <th scope="col">Receiver Base/Unit</th>
                 <!-- <th scope="col">Receiver Sections</th> -->
@@ -36,7 +36,7 @@
               <tr>
                 <th scope="row">{{message.serial}}</th>
                 <td><a href="{% url 'los-update' message.id %}">{{message.ref}}</a></td>
-                <td>{{message.originator}}</td>
+                <!-- <td>{{message.originator}}</td> -->
                 <td>{{message.sender}}</td>
                 <td>{{message.written_by}}</td>
                 <!-- <td>{{message.main_receiver}}</td> -->

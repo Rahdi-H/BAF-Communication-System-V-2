@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
-from .models import LOS, Acknowledgement, CRPT
+from .models import LOS, Acknowledgement, CRPT, DispAck
 from .admin import LOSResouce, CRPTResouce
-from .forms import LoginForm, LOSForm, CRPTForm
+from .forms import LoginForm, LOSForm, CRPTForm, DispAckForm
 from django.http import HttpResponse
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
@@ -73,33 +73,27 @@ def in_los(request):
             los = LOS.objects.get(ref=ref)
             los.received_by.add(ack)
             los.save()
-        if 'dispa' in request.POST:
-            dispathced = request.POST.get('dispatched')
-            id = request.POST.get('id')
-            los = LOS.objects.get(id = id)
-            los.dispatched = True
-            los.save()
     if request.method == 'GET':
         if 'month' in request.GET:
             month = request.GET.get('month')
-            print('This is Month : ', month)
             messages = LOS.objects.filter(Q(datetime_of_action__icontains=month) & Q(receiver_unit = request.user.id)).order_by('-id')
             lenn = len(messages)
+            print(messages[0].dispatched_to_fun)
             context = {
                 'messages' : messages,
                 'lenn' : lenn,
                 'month' : month
             }
             return render(request, 'unit/in_los.html', context)
-        
+    disp = DispAck.objects.filter(user=request.user)
     current_month = datetime.datetime.now().strftime('%Y-%m')
-    print(current_month)
     messages = LOS.objects.filter(Q(datetime_of_action__icontains=current_month) & Q(receiver_unit = request.user.id)).order_by('-id')
     lenn = len(messages)
     context = {
         'messages' : messages,
         'lenn' : lenn,
         'month' : current_month,
+        'disp' : disp,
         }
     return render(request, 'unit/in_los.html', context)
 
@@ -135,13 +129,15 @@ def in_crpt(request):
             }
             return render(request, 'unit/in_crpt.html', context)
 
+    disp = DispAck.objects.filter(user=request.user)
     current_month = datetime.datetime.now().strftime('%Y-%m')
     messages = CRPT.objects.filter(Q(datetime_of_action__icontains=current_month) & Q(receiver_unit = request.user.id)).order_by('-id')
     lenn = len(messages)
     context = {
         'messages' : messages,
         'lenn' : lenn,
-        'month' : current_month
+        'month' : current_month,
+        'disp' : disp,
     }
     return render(request, 'unit/in_crpt.html', context)
 
@@ -189,6 +185,21 @@ def out_crpt(request):
     }
     return render(request, 'unit/out_crpt.html', context)
 
+def dispatch(request, ref):
+    if request.method == 'POST':
+        offices = request.POST['offices']
+        if DispAck.objects.filter(ref=ref):
+            disp = DispAck.objects.get(ref=ref)
+            disp.rec_office = offices
+        else:
+            disp = DispAck.objects.create(ref=ref, user=request.user, rec_office=offices)
+        disp.save()
+        return redirect(f'/dispatch/{str(ref)}/')
+    dis = 0
+    if DispAck.objects.filter(ref=ref):
+        dis = DispAck.objects.get(ref=ref)
+    return render(request, 'unit/dispatch.html', {'dis': dis})
+
 # @login_required(login_url='/login/')
 # def los_add(request):
 #     if request.method == 'POST':
@@ -213,19 +224,31 @@ class LosCreateView(CreateView):
     model = LOS
     form_class = LOSForm
     template_name = 'unit/los_add.html'
-    success_url = '/out-los/add'   
+    success_url = '/out-los/'   
 
     def form_valid(self, form):
         instance = form.save(commit=False)
         instance.sender = self.request.user
         instance.save()
         return super().form_valid(form)
+    
+# class DispCreateView(CreateView):
+    # model = DispAck
+    # form_class = DispAckForm
+    # template_name = 'unit/dispatch.html'
+    # success_url = '/dispatch/'
 
+    # def form_valid(self, form):
+    #     instance = form.save(commit=False)
+    #     instance.sender = self.request.user
+    #     instance.save()
+    #     return super().form_valid()
+    
 class CrptCreateView(CreateView):
     model = CRPT
     form_class = CRPTForm
     template_name = 'unit/crpt_add.html'
-    success_url = '/out-crpt/add'   
+    success_url = '/out-crpt/'   
 
     def form_valid(self, form):
         instance = form.save(commit=False)
